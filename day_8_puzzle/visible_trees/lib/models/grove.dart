@@ -12,6 +12,20 @@ class Grove {
     determineTreeVisibility();
   }
 
+  Tree get highestVisibilityTree {
+    Tree bestViewTree = treeGridRows[0][0];
+    int highestVisibility = treeGridRows[0][0].visibilityScore;
+    treeGridRows.forEach((treeRow) {
+      treeRow.forEach((tree) {
+        if (tree.visibilityScore > highestVisibility) {
+          bestViewTree = tree;
+          highestVisibility = tree.visibilityScore;
+        }
+      });
+    });
+    return bestViewTree;
+  }
+
   void parseDataMap() {
     final NUMROWS = dataMap.length;
     final NUMCOLS = dataMap[0].length;
@@ -53,21 +67,33 @@ class Grove {
               treeColumn.sublist(treeInRow.rowIdx + 1, treeColumn.length);
 
           treesToLeft.reversed.forEach((testTree) {
+            if (!treeInRow.isHiddenToLeft) {
+              treeInRow.visibilityScoreToLeft++;
+            }
             if (testTree.height >= treeInRow.height) {
               treeInRow.isHiddenToLeft = true;
             }
           });
           treesToRight.forEach((testTree) {
+            if (!treeInRow.isHiddenToRight) {
+              treeInRow.visibilityScoreToRight++;
+            }
             if (testTree.height >= treeInRow.height) {
               treeInRow.isHiddenToRight = true;
             }
           });
           treesToAbove.reversed.forEach((testTree) {
+            if (!treeInRow.isHiddenToAbove) {
+              treeInRow.visibilityScoreToAbove++;
+            }
             if (testTree.height >= treeInRow.height) {
               treeInRow.isHiddenToAbove = true;
             }
           });
           treesToBelow.forEach((testTree) {
+            if (!treeInRow.isHiddenToBelow) {
+              treeInRow.visibilityScoreToBelow++;
+            }
             if (testTree.height >= treeInRow.height) {
               treeInRow.isHiddenToBelow = true;
             }
