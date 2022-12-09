@@ -33,7 +33,10 @@ void main(List<String> arguments) {
 
   final number_of_visible_trees = treeGrove.visibleTrees.length;
   final number_of_hidden_trees = treeGrove.hiddenTrees.length;
+  final highest_visibility_score =
+      treeGrove.highestVisibilityTree.visibilityScore;
 
   print('Number of visible trees: $number_of_visible_trees');
   print('Number of hidden trees: $number_of_hidden_trees');
+  print('The highest visibility score is: $highest_visibility_score');
 }

@@ -15,5 +15,6 @@ void main() {
     final treeGrove = Grove(dataMap);
     expect(treeGrove.visibleTrees.length, 21);
     expect(treeGrove.hiddenTrees.length, 4);
+    expect(treeGrove.highestVisibilityTree.visibilityScore, 8);
   });
 }
