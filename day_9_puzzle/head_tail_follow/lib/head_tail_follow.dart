@@ -59,9 +59,7 @@ class HeadTailFollow {
     print("\tTail[start]: ${tailTraversals.last}");
     for (var i = 0; i < numberOfSteps; i++) {
       moveHead(command.direction);
-      if (tailNeedsToMove()) {
-        moveTailToHead();
-      }
+      moveKnots();
     }
     print("\tHead[end]: ${headTraversals.last}");
     print("\tTail[end]: ${tailTraversals.last}");
@@ -76,22 +74,31 @@ class HeadTailFollow {
     headTraversals.add(nextCell);
   }
 
-  bool tailNeedsToMove() {
+  bool cellNeedsToMove(Cell testCell) {
     final currentHead = headTraversals.last;
-    final currentTail = tailTraversals.last;
 
-    final int distanceToHead = currentTail.distanceTo(currentHead);
+    final int distanceToHead = testCell.distanceTo(currentHead);
     final bool needsToMove = distanceToHead > 1;
 
     return needsToMove;
   }
 
-  void moveTailToHead() {
+  void moveCellNextToHead(Cell testCell, List<Cell> traversals) {
     final currentHead = headTraversals.last;
-    final currentTail = tailTraversals.last;
     Cell lastHead = headTraversals[headTraversals.length - 2];
     lastHead.tailVisited = true;
-    tailTraversals.add(lastHead);
+    traversals.add(lastHead);
+  }
+
+  void moveKnots() {
+    final otherKnotsTraversalList = knotTraversals.sublist(1);
+
+    otherKnotsTraversalList.forEach((knotTraversals) {
+      final currentKnotCell = knotTraversals.last;
+      if (cellNeedsToMove(currentKnotCell)) {
+        moveCellNextToHead(currentKnotCell, knotTraversals);
+      }
+    });
   }
 }
 
