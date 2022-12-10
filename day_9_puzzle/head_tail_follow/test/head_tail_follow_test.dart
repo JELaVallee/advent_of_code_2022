@@ -8,7 +8,7 @@ void main() {
     final dataMapFile = File("./head_commands_test.txt");
     List<String> commandLines = dataMapFile.readAsLinesSync();
 
-    final fsParser = HeadTailFollow(commandLines);
+    final fsParser = HeadTailFollow(commandLines, 2);
 
     expect(fsParser.totalHeadVisitedCells, 24);
     expect(fsParser.totalTailVisitedCells, 13);

@@ -5,9 +5,12 @@ class HeadTailFollow {
   List<Command> commandStack = [];
   List<Cell> headTraversals = [];
   List<Cell> tailTraversals = [];
+  List<List<Cell>> knotTraversals = [];
+  int numberOfKnots = 2;
 
-  HeadTailFollow(this.commandList) {
+  HeadTailFollow(this.commandList, this.numberOfKnots) {
     parseCommands();
+    initializeTraversalLists();
     runTraversal();
   }
 
@@ -19,6 +22,19 @@ class HeadTailFollow {
     return headTraversals.toSet().length;
   }
 
+  void initializeTraversalLists() {
+    final startingCell = Cell(0, 0);
+
+    for (var i = 0; i < numberOfKnots; i++) {
+      final List<Cell> traversalList = [startingCell];
+      knotTraversals.add(traversalList);
+    }
+    headTraversals = knotTraversals[0];
+    headTraversals.last.headVisited = true;
+    tailTraversals = knotTraversals.last;
+    tailTraversals.last.tailVisited = true;
+  }
+
   void parseCommands() {
     commandList.forEach((commandLine) {
       final currentCommand = commandLine.split(" ");
@@ -28,14 +44,8 @@ class HeadTailFollow {
   }
 
   void runTraversal() {
-    var currentHeadCell = Cell(0, 0);
-    var currentTailCell = currentHeadCell;
-
-    currentHeadCell.headVisited = true;
-    currentTailCell.tailVisited = true;
-
-    headTraversals.add(currentHeadCell);
-    tailTraversals.add(currentTailCell);
+    var currentHeadCell = headTraversals.last;
+    var currentTailCell = tailTraversals.last;
 
     commandStack.forEach((command) {
       print("Processing command: ${command.direction} ${command.distance}");
