@@ -5,9 +5,12 @@ class HeadTailFollow {
   List<Command> commandStack = [];
   List<Cell> headTraversals = [];
   List<Cell> tailTraversals = [];
+  List<List<Cell>> knotTraversals = [];
+  int numberOfKnots = 2;
 
-  HeadTailFollow(this.commandList) {
+  HeadTailFollow(this.commandList, this.numberOfKnots) {
     parseCommands();
+    initializeTraversalLists();
     runTraversal();
   }
 
@@ -19,6 +22,20 @@ class HeadTailFollow {
     return headTraversals.toSet().length;
   }
 
+  void initializeTraversalLists() {
+    final startingCell = Cell(0, 0);
+    startingCell.isStart = true;
+
+    for (var i = 0; i < numberOfKnots; i++) {
+      final List<Cell> traversalList = [startingCell];
+      knotTraversals.add(traversalList);
+    }
+    headTraversals = knotTraversals[0];
+    headTraversals.last.headVisited = true;
+    tailTraversals = knotTraversals.last;
+    tailTraversals.last.tailVisited = true;
+  }
+
   void parseCommands() {
     commandList.forEach((commandLine) {
       final currentCommand = commandLine.split(" ");
@@ -28,33 +45,26 @@ class HeadTailFollow {
   }
 
   void runTraversal() {
-    var currentHeadCell = Cell(0, 0);
-    var currentTailCell = currentHeadCell;
-
-    currentHeadCell.headVisited = true;
-    currentTailCell.tailVisited = true;
-
-    headTraversals.add(currentHeadCell);
-    tailTraversals.add(currentTailCell);
+    var currentHeadCell = headTraversals.last;
+    var currentTailCell = tailTraversals.last;
 
     commandStack.forEach((command) {
       print("Processing command: ${command.direction} ${command.distance}");
       processCommand(command);
+      // printCurrentGrid();
     });
   }
 
   void processCommand(Command command) {
     final int numberOfSteps = command.distance;
-    print("\tHead[start]: ${headTraversals.last}");
-    print("\tTail[start]: ${tailTraversals.last}");
+    // print("\tHead[start]: ${headTraversals.last}");
+    // print("\tTail[start]: ${tailTraversals.last}");
     for (var i = 0; i < numberOfSteps; i++) {
       moveHead(command.direction);
-      if (tailNeedsToMove()) {
-        moveTailToHead();
-      }
+      moveKnots();
     }
-    print("\tHead[end]: ${headTraversals.last}");
-    print("\tTail[end]: ${tailTraversals.last}");
+    // print("\tHead[end]: ${headTraversals.last}");
+    // print("\tTail[end]: ${tailTraversals.last}");
   }
 
   void moveHead(Direction direction) {
@@ -66,22 +76,100 @@ class HeadTailFollow {
     headTraversals.add(nextCell);
   }
 
-  bool tailNeedsToMove() {
-    final currentHead = headTraversals.last;
-    final currentTail = tailTraversals.last;
+  void moveKnots() {
+    final otherKnotsTraversalLists = knotTraversals.sublist(1);
 
-    final int distanceToHead = currentTail.distanceTo(currentHead);
-    final bool needsToMove = distanceToHead > 1;
+    otherKnotsTraversalLists.forEach((currentTraversals) {
+      final currentKnotCell = currentTraversals.last;
+      final previousTraversals = knotTraversals
+          .elementAt(knotTraversals.indexOf(currentTraversals) - 1);
+      final previousCell = previousTraversals.last;
+      if (cellNeedsToMove(currentKnotCell, previousCell)) {
+        moveCellNextToCell(currentKnotCell, previousCell, currentTraversals,
+            previousTraversals);
+      }
+    });
+  }
+
+  bool cellNeedsToMove(Cell testCell, Cell comparisonCell) {
+    final int distanceToComparisonCell = testCell.distanceTo(comparisonCell);
+    final bool needsToMove = distanceToComparisonCell > 1;
 
     return needsToMove;
   }
 
-  void moveTailToHead() {
-    final currentHead = headTraversals.last;
-    final currentTail = tailTraversals.last;
-    Cell lastHead = headTraversals[headTraversals.length - 2];
-    lastHead.tailVisited = true;
-    tailTraversals.add(lastHead);
+  void moveCellNextToCell(Cell currentCell, Cell testCell,
+      List<Cell> traversals, List<Cell> previousTraversals) {
+    final Cell lastLeadCell = previousTraversals[previousTraversals.length - 2];
+    final Coordinate2D moveOffset =
+        Coordinate2D(testCell.x - lastLeadCell.x, testCell.y - lastLeadCell.y);
+    final Coordinate2D currentOffset =
+        Coordinate2D(testCell.x - currentCell.x, testCell.y - currentCell.y);
+    Cell newCell = Cell(testCell.x - moveOffset.x, testCell.y - moveOffset.y);
+    if (currentOffset.x == 0) {
+      newCell = Cell(currentCell.x, currentCell.y + moveOffset.y);
+    } else if (currentOffset.y == 0) {
+      newCell = Cell(currentCell.x + moveOffset.x, currentCell.y);
+    } else if (moveOffset.x.abs() == 1 && moveOffset.y.abs() == 1) {
+      newCell =
+          Cell(currentCell.x + moveOffset.x, currentCell.y + moveOffset.y);
+    }
+
+    if (knotTraversals.indexOf(traversals) == knotTraversals.length - 1) {
+      // At the tail traversal list
+      newCell.tailVisited = true;
+    }
+
+    traversals.add(newCell);
+  }
+
+  void printCurrentGrid() {
+    final int gridWidth = 26;
+    final int gridHeight = 21;
+    final Coordinate2D originOffset = Coordinate2D(11, 5);
+    final originCell = knotTraversals.first.first;
+    final tailTrailChar = "#";
+    String outputGrid = "";
+
+    for (var yPos = -originOffset.y;
+        yPos < gridHeight - originOffset.y;
+        yPos++) {
+      String currentLineOut = "";
+      for (var xPos = -originOffset.x;
+          xPos < gridWidth - originOffset.x;
+          xPos++) {
+        String traversalOutValue = ".";
+        if (originCell.x == xPos && originCell.y == yPos) {
+          traversalOutValue = "X";
+        } else {
+          final Set<Cell> tailMatch = tailTraversals
+              .toSet()
+              .where((tailVisitedCell) =>
+                  (tailVisitedCell.x == xPos && tailVisitedCell.y == yPos))
+              .toSet();
+          if (tailMatch.isNotEmpty) {
+            traversalOutValue = tailTrailChar;
+          }
+        }
+        knotTraversals.reversed.forEach((currentTraversals) {
+          final currentCell = currentTraversals.last;
+          if (currentCell.x == xPos && currentCell.y == yPos) {
+            if (knotTraversals.indexOf(currentTraversals) == 0) {
+              traversalOutValue = "H";
+            } else if (knotTraversals.indexOf(currentTraversals) ==
+                knotTraversals.length - 1) {
+              traversalOutValue = "T";
+            } else {
+              traversalOutValue =
+                  knotTraversals.indexOf(currentTraversals).toString();
+            }
+          }
+        });
+        currentLineOut += traversalOutValue;
+      }
+      outputGrid = currentLineOut + "\n" + outputGrid;
+    }
+    print(outputGrid);
   }
 }
 
@@ -113,6 +201,7 @@ enum Direction {
 class Cell extends Coordinate2D with EquatableMixin {
   bool headVisited = false;
   bool tailVisited = false;
+  bool isStart = false;
 
   Cell(x, y) : super(x, y);
 
