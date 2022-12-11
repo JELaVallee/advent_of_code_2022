@@ -16,7 +16,7 @@ void main(List<String> arguments) {
 
   // Initialize a Grove with the provided datamap
   print("Parsing Filesystem history data... \n");
-  final fsParser = HeadTailFollow(commandLines, 2);
+  final fsParser = HeadTailFollow(commandLines, 10);
 
   final total_tail_visited_cells = fsParser.totalTailVisitedCells;
   final total_head_visited_cells = fsParser.totalHeadVisitedCells;

@@ -10,8 +10,8 @@ void main() {
 
     final fsParser = HeadTailFollow(commandLines, 2);
 
-    expect(fsParser.totalHeadVisitedCells, 24);
     expect(fsParser.totalTailVisitedCells, 13);
+    expect(fsParser.totalHeadVisitedCells, 21);
   });
   test('parses the traversal command with 10 knots', () {
     final dataMapFile = File("./head_commands_test2.txt");
