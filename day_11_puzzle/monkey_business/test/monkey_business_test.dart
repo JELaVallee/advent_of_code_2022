@@ -4,7 +4,7 @@ import 'package:monkey_business/monkey_business.dart';
 
 void main() {
   test('processes the instructions and samples correctly', () {
-    final dataMapFile = File("./monkey_notes_full.txt");
+    final dataMapFile = File("./monkey_notes_test.txt");
     List<String> monkeyNotes = dataMapFile.readAsLinesSync();
 
     // MonkeyBusiness monkeyBusiness = MonkeyBusiness(monkeyNotes);
@@ -13,6 +13,6 @@ void main() {
 
     MonkeyBusiness monkeyBusiness = MonkeyBusiness(monkeyNotes);
 
-    expect(monkeyBusiness.totalAfter(20, false), 2713310158);
+    expect(monkeyBusiness.totalAfter(10000, false), 2713310158);
   });
 }

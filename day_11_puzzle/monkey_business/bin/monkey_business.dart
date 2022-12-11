@@ -16,15 +16,16 @@ void main(List<String> arguments) {
 
   // Initialize a Grove with the provided datamap
   print("Parsing instruction set data... \n");
-  final monkeyBusiness = MonkeyBusiness(monkeyNotes);
+  MonkeyBusiness monkeyBusiness = MonkeyBusiness(monkeyNotes);
 
   final total_monkey_business_after_20 = monkeyBusiness.totalAfter(20, true);
 
   print(
       "Total amount of Monkey Business after 20 rounds: $total_monkey_business_after_20");
 
+  MonkeyBusiness monkeyBusiness2 = MonkeyBusiness(monkeyNotes);
   final total_monkey_business_after_10K =
-      monkeyBusiness.totalAfter(10000, false);
+      monkeyBusiness2.totalAfter(10000, false);
 
   print(
       "Total amount of Monkey Business after 10000 rounds: $total_monkey_business_after_10K");

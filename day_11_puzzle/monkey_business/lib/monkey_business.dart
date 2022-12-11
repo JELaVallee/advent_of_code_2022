@@ -96,7 +96,7 @@ class Monkey {
     falseMonkeyIndex = int.parse(monkeyNote[5].split("to monkey")[1]);
     final startingItemsList = monkeyNote[1].split(":")[1].split(",");
     startingItemsList.forEach((itemWorry) {
-      holdingItems.add(Item(BigInt.parse(itemWorry)));
+      holdingItems.add(Item(int.parse(itemWorry)));
     });
     operation = Operation(monkeyNote[2].split("= ")[1]);
   }
@@ -112,20 +112,18 @@ class Monkey {
   }
 
   void inspectThe(Item item) {
-    item.worryLevel =
-        operation.evaluate(item.worryLevel % BigInt.from(leastCommonDivisor));
+    item.worryLevel = operation.evaluate(item.worryLevel % leastCommonDivisor);
   }
 
   void getBoredWith(Item item, bool getsBored) {
     if (getsBored) {
-      item.worryLevel = item.worryLevel ~/ BigInt.from(3);
+      item.worryLevel = item.worryLevel ~/ 3;
     }
   }
 
   void tossThe(Item item, Monkey trueMonkey, Monkey falseMonkey) {
-    final decisionRemainder = item.worryLevel % BigInt.from(testDivisor);
-    // item.worryLevel = decisionRemainder + BigInt.from(testDivisor);
-    if (decisionRemainder == BigInt.zero) {
+    final decisionRemainder = item.worryLevel % testDivisor;
+    if (decisionRemainder == 0) {
       trueMonkey.holdingItems.add(item);
     } else {
       falseMonkey.holdingItems.add(item);
@@ -138,23 +136,23 @@ class Operation {
 
   Operation(this.formula);
 
-  BigInt evaluate(BigInt oldValue) {
+  int evaluate(int oldValue) {
     Parser mathParser = Parser();
     Expression mathExpression = mathParser.parse(formula);
-    BigInt result = BigInt.zero;
+    int result = 0;
     if (mathExpression is Times) {
       if (mathExpression.first is Variable &&
           mathExpression.second is Variable) {
         result = oldValue * oldValue;
       } else {
         result = oldValue *
-            BigInt.parse(double.parse(mathExpression.second.toString())
+            int.parse(double.parse(mathExpression.second.toString())
                 .round()
                 .toString());
       }
     } else if (mathExpression is Plus) {
       result = oldValue +
-          BigInt.parse(double.parse(mathExpression.second.toString())
+          int.parse(double.parse(mathExpression.second.toString())
               .round()
               .toString());
     }
@@ -163,6 +161,6 @@ class Operation {
 }
 
 class Item {
-  BigInt worryLevel = BigInt.from(0);
+  int worryLevel = 0;
   Item(this.worryLevel);
 }
