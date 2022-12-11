@@ -8,8 +8,8 @@ class MonkeyBusiness {
     processMonkeyNotes();
   }
 
-  int totalAfter(int rounds) {
-    processMonkeyRounds(rounds);
+  int totalAfter(int rounds, bool getsBored) {
+    processMonkeyRounds(rounds, getsBored);
     final sortedTotals =
         monkeys.map((monkey) => monkey.itemsInspected).toList();
     sortedTotals.sort();
@@ -32,12 +32,13 @@ class MonkeyBusiness {
     }
   }
 
-  void processMonkeyRounds(int rounds) {
+  void processMonkeyRounds(int rounds, bool getsBored) {
     for (var i = 0; i < rounds; i++) {
       monkeys.forEach((monkey) {
-        monkey.takeTurn(monkeys);
+        monkey.takeTurn(monkeys, getsBored);
       });
       printMonkeyItemsFor(i);
+      // printMonkeyInspectionsFor(i);
     }
   }
 
@@ -46,6 +47,13 @@ class MonkeyBusiness {
     monkeys.forEach((monkey) {
       print(
           "\tMonkey ${monkey.id}: ${monkey.itemsInspected} : ${monkey.holdingItems.map(((item) => "${item.worryLevel}, ")).join()}");
+    });
+  }
+
+  void printMonkeyInspectionsFor(int round) {
+    print("== After Round ${round + 1} ==");
+    monkeys.forEach((monkey) {
+      print("\tMonkey ${monkey.id} inspected items ${monkey.itemsInspected}");
     });
   }
 }
@@ -71,17 +79,17 @@ class Monkey {
     falseMonkeyIndex = int.parse(monkeyNote[5].split("to monkey")[1]);
     final startingItemsList = monkeyNote[1].split(":")[1].split(",");
     startingItemsList.forEach((itemWorry) {
-      holdingItems.add(Item(int.parse(itemWorry)));
+      holdingItems.add(Item(BigInt.parse(itemWorry)));
     });
     operation = Operation(monkeyNote[2].split("= ")[1]);
   }
 
-  void takeTurn(List<Monkey> monkeys) {
+  void takeTurn(List<Monkey> monkeys, bool getsBored) {
     holdingItems.forEach((item) {
-      itemsInspected++;
       inspectThe(item);
-      getBoredWith(item);
+      if (getsBored) getBoredWith(item);
       tossThe(item, monkeys[trueMonkeyIndex], monkeys[falseMonkeyIndex]);
+      itemsInspected++;
     });
     holdingItems = [];
   }
@@ -91,12 +99,13 @@ class Monkey {
   }
 
   void getBoredWith(Item item) {
-    item.worryLevel = (item.worryLevel / 3).floor();
+    item.worryLevel = item.worryLevel ~/ BigInt.from(3);
   }
 
   void tossThe(Item item, Monkey trueMonkey, Monkey falseMonkey) {
-    final decisionRemainder = item.worryLevel % testDivisor;
-    if (decisionRemainder == 0) {
+    final decisionRemainder = item.worryLevel % BigInt.from(testDivisor);
+    // item.worryLevel = decisionRemainder + BigInt.from(testDivisor);
+    if (decisionRemainder == BigInt.zero) {
       trueMonkey.holdingItems.add(item);
     } else {
       falseMonkey.holdingItems.add(item);
@@ -109,17 +118,18 @@ class Operation {
 
   Operation(this.formula);
 
-  int evaluate(int oldValue) {
-    final varSubFormula = formula.replaceAll("old", oldValue.toString());
+  BigInt evaluate(BigInt oldValue) {
+    // final varSubFormula = formula.replaceAll("old", oldValue.toString());
     Parser mathParser = Parser();
-    Expression mathExpression = mathParser.parse(varSubFormula);
-    double result =
-        mathExpression.evaluate(EvaluationType.REAL, ContextModel());
-    return result.floor();
+    Expression mathExpression = mathParser.parse(formula);
+    ContextModel cm = ContextModel();
+    cm.bindVariableName("old", Number(oldValue.toInt()));
+    double result = mathExpression.evaluate(EvaluationType.REAL, cm);
+    return BigInt.from(result);
   }
 }
 
 class Item {
-  int worryLevel = 0;
+  BigInt worryLevel = BigInt.from(0);
   Item(this.worryLevel);
 }

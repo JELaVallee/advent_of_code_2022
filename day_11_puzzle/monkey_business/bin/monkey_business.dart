@@ -18,8 +18,14 @@ void main(List<String> arguments) {
   print("Parsing instruction set data... \n");
   final monkeyBusiness = MonkeyBusiness(monkeyNotes);
 
-  final total_monkey_business = monkeyBusiness.totalAfter(20);
+  final total_monkey_business_after_20 = monkeyBusiness.totalAfter(20, true);
 
   print(
-      "Total amount of Monkey Business after 20 rounds: $total_monkey_business");
+      "Total amount of Monkey Business after 20 rounds: $total_monkey_business_after_20");
+
+  final total_monkey_business_after_10K =
+      monkeyBusiness.totalAfter(10000, false);
+
+  print(
+      "Total amount of Monkey Business after 10000 rounds: $total_monkey_business_after_10K");
 }

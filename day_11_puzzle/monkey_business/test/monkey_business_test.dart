@@ -7,8 +7,12 @@ void main() {
     final dataMapFile = File("./monkey_notes_test.txt");
     List<String> monkeyNotes = dataMapFile.readAsLinesSync();
 
-    final monkeyBusiness = MonkeyBusiness(monkeyNotes);
+    MonkeyBusiness monkeyBusiness = MonkeyBusiness(monkeyNotes);
 
-    expect(monkeyBusiness.totalAfter(20), 10605);
+    expect(monkeyBusiness.totalAfter(20, true), 10605);
+
+    monkeyBusiness = MonkeyBusiness(monkeyNotes);
+
+    expect(monkeyBusiness.totalAfter(20, false), 2713310158);
   });
 }
