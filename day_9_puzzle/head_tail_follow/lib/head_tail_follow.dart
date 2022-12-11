@@ -51,8 +51,9 @@ class HeadTailFollow {
     commandStack.forEach((command) {
       print("Processing command: ${command.direction} ${command.distance}");
       processCommand(command);
-      // printCurrentGrid();
+      printCurrentGrid(40, 20, Coordinate2D(19, 9));
     });
+    // printCurrentGrid(40, 20, Coordinate2D(19, 9));
   }
 
   void processCommand(Command command) {
@@ -123,10 +124,10 @@ class HeadTailFollow {
     traversals.add(newCell);
   }
 
-  void printCurrentGrid() {
-    final int gridWidth = 26;
-    final int gridHeight = 21;
-    final Coordinate2D originOffset = Coordinate2D(11, 5);
+  void printCurrentGrid(int width, int height, Coordinate2D offset) {
+    final int gridWidth = width;
+    final int gridHeight = height;
+    final Coordinate2D originOffset = offset;
     final originCell = knotTraversals.first.first;
     final tailTrailChar = "#";
     String outputGrid = "";
