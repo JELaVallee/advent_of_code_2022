@@ -9,6 +9,6 @@ void main() {
 
     final monkeyBusiness = MonkeyBusiness(monkeyNotes);
 
-    expect(monkeyBusiness.totalAfter(200), 10605);
+    expect(monkeyBusiness.totalAfter(20), 10605);
   });
 }
