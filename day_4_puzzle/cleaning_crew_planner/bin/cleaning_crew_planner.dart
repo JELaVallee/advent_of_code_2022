@@ -20,4 +20,9 @@ void main(List<String> arguments) {
 
   print(
       "Number of fully overlapping assignments: $numberOfFullyOverlappedAssignments");
+
+  final int numberOfOverlappedAssignments =
+      cleaningCrewPlanner.numberOfOverlappedAssignments;
+
+  print("Number of overlapping assignments: $numberOfOverlappedAssignments");
 }
