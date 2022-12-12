@@ -10,6 +10,10 @@ class CleaningCrewPlanner {
     return crewPairs.where((pair) => pair.inclusive).length;
   }
 
+  int get numberOfOverlappedAssignments {
+    return crewPairs.where((pair) => pair.overlapping).length;
+  }
+
   void parseAssignments() {
     crewAssignments.forEach((assignmentListing) {
       crewPairs.add(CrewPair(assignmentListing));
