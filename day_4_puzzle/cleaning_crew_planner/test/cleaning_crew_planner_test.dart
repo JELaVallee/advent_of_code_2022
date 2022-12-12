@@ -45,6 +45,6 @@ void main() {
     CleaningCrewPlanner cleaningCrewPlanner =
         CleaningCrewPlanner(crewAssignments);
 
-    expect(cleaningCrewPlanner.numberOfOverlappedAssignments, 588);
+    expect(cleaningCrewPlanner.numberOfOverlappedAssignments, 911);
   });
 }
