@@ -1,6 +1,7 @@
 class RockPaperScissors {
   final List<String> playGuide;
   final List<Bout> guideBouts = [];
+  final List<Bout> hintsBouts = [];
 
   RockPaperScissors(this.playGuide) {
     parsePlayGuide();
@@ -12,12 +13,21 @@ class RockPaperScissors {
         .reduce((value, score) => value + score);
   }
 
+  int get totalScoreWithHints {
+    return hintsBouts
+        .map((bout) => bout.playerScore)
+        .reduce((value, score) => value + score);
+  }
+
   void parsePlayGuide() {
     playGuide.forEach((guideBoutEntry) {
       final guideBoutPlays = guideBoutEntry.split(" ");
       final opponentHand = Hand.forOpponentRune(guideBoutPlays[0]);
       final playerHand = Hand.forPlayerRune(guideBoutPlays[1]);
       guideBouts.add(Bout(playerHand, opponentHand));
+      final hintChoice = Decision.forChoice(guideBoutPlays[1]);
+      final hintPlayerHand = Hand.forPlayerChoice(hintChoice, opponentHand);
+      hintsBouts.add(Bout(hintPlayerHand, opponentHand));
     });
   }
 }
@@ -34,7 +44,7 @@ class Bout {
   int get playerScore {
     int boutPlayerScore = 0;
     boutPlayerScore += playerHand.play.spec.points;
-    boutPlayerScore += decision.points;
+    boutPlayerScore += decision.spec.points;
     return boutPlayerScore;
   }
 }
@@ -56,16 +66,46 @@ class Hand {
         .first;
     return Hand(opponentPlay);
   }
+
+  static Hand forPlayerChoice(Decision hintChoice, Hand againstHand) {
+    switch (hintChoice) {
+      case Decision.loss:
+        if (againstHand.play == Play.rock) return Hand(Play.scissors);
+        if (againstHand.play == Play.paper) return Hand(Play.rock);
+        if (againstHand.play == Play.scissors) return Hand(Play.paper);
+        break;
+      case Decision.draw:
+        if (againstHand.play == Play.rock) return Hand(Play.rock);
+        if (againstHand.play == Play.paper) return Hand(Play.paper);
+        if (againstHand.play == Play.scissors) return Hand(Play.scissors);
+        break;
+      case Decision.win:
+        if (againstHand.play == Play.rock) return Hand(Play.paper);
+        if (againstHand.play == Play.paper) return Hand(Play.scissors);
+        if (againstHand.play == Play.scissors) return Hand(Play.rock);
+        break;
+      default:
+        return Hand(Play.paper);
+    }
+    return Hand(Play.paper);
+  }
 }
 
 enum Decision {
-  loss(0),
-  draw(3),
-  win(6);
+  loss(DecisionSpec(0, "X")),
+  draw(DecisionSpec(3, "Y")),
+  win(DecisionSpec(6, "Z"));
 
-  final int points;
+  final DecisionSpec spec;
 
-  const Decision(this.points);
+  const Decision(this.spec);
+
+  static Decision forChoice(String choiceRune) {
+    final Decision choice = Decision.values
+        .where((decision) => decision.spec.choiceRune == choiceRune)
+        .first;
+    return choice;
+  }
 
   static forBout(Hand opponentHand, Hand playerHand) {
     switch (opponentHand.play) {
@@ -88,6 +128,12 @@ enum Decision {
         return Decision.loss;
     }
   }
+}
+
+class DecisionSpec {
+  final int points;
+  final String choiceRune;
+  const DecisionSpec(this.points, this.choiceRune);
 }
 
 enum Play {

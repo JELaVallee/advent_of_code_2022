@@ -11,5 +11,6 @@ void main() {
         RockPaperScissors(rockPaperScissorsGuide);
 
     expect(rockPaperScissors.totalScoreWithGuide, 15);
+    expect(rockPaperScissors.totalScoreWithHints, 12);
   });
 }

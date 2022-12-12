@@ -18,4 +18,8 @@ void main(List<String> arguments) {
   final int total_score_with_guide = rockPaperScissors.totalScoreWithGuide;
 
   print("Total score if playing with the guide: $total_score_with_guide");
+
+  final int total_score_with_hints = rockPaperScissors.totalScoreWithHints;
+
+  print("Total score if playing with the hints: $total_score_with_hints");
 }
