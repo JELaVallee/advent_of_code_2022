@@ -21,6 +21,6 @@ void main() {
 
     CrateLoader cleaningCrewPlanner = CrateLoader(crateLoaderInstructions);
 
-    expect(cleaningCrewPlanner.topCrates, "ABCDEF");
+    expect(cleaningCrewPlanner.topCrates, "MQTPGLLDN");
   });
 }

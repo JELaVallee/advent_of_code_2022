@@ -7,10 +7,13 @@ class CrateLoader {
 
   CrateLoader(this.crateLoaderInstructions) {
     parseLoaderInstructions();
+    processInstructions();
   }
 
   String get topCrates {
-    return "XYZ";
+    return crateStacks
+        .map((stack) => stack.top().id)
+        .reduce(((value, id) => value + id));
   }
 
   void parseLoaderInstructions() {
@@ -49,7 +52,21 @@ class CrateLoader {
     });
   }
 
-  void parseInstructionSets(List<String> instructionSets) {}
+  void parseInstructionSets(List<String> instructionSets) {
+    instructionSets.forEach((instructionSet) {
+      loaderInstructions
+          .add(Instruction.fromInstructionSet(instructionSet, crateStacks));
+    });
+  }
+
+  void processInstructions() {
+    loaderInstructions.forEach((instruction) {
+      for (var i = 0; i < instruction.quantity; i++) {
+        final moveCrate = instruction.fromStack.pop();
+        instruction.toStack.push(moveCrate);
+      }
+    });
+  }
 }
 
 class Instruction {
@@ -62,8 +79,8 @@ class Instruction {
       String instructionSet, List<Stack<Crate>> crateStacks) {
     final parsedSet = instructionSet.split(" ");
     final quantity = int.parse(parsedSet[1]);
-    final fromStack = crateStacks.elementAt(int.parse(parsedSet[3]));
-    final toStack = crateStacks.elementAt(int.parse(parsedSet[5]));
+    final fromStack = crateStacks.elementAt(int.parse(parsedSet[3]) - 1);
+    final toStack = crateStacks.elementAt(int.parse(parsedSet[5]) - 1);
     return Instruction(quantity, fromStack, toStack);
   }
 }
