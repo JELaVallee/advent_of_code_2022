@@ -11,7 +11,7 @@ void main() {
 
     CrateLoader cleaningCrewPlanner = CrateLoader(crateLoaderInstructions);
 
-    expect(cleaningCrewPlanner.topCrates, "CMZ");
+    expect(cleaningCrewPlanner.topCrates, "MCD");
   });
   test(
       'processes the loading instructions and return the top-most crates [full]',
@@ -21,6 +21,6 @@ void main() {
 
     CrateLoader cleaningCrewPlanner = CrateLoader(crateLoaderInstructions);
 
-    expect(cleaningCrewPlanner.topCrates, "MQTPGLLDN");
+    expect(cleaningCrewPlanner.topCrates, "LVZPSTTCZ");
   });
 }

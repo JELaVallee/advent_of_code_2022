@@ -61,9 +61,13 @@ class CrateLoader {
 
   void processInstructions() {
     loaderInstructions.forEach((instruction) {
+      final craneRack = Stack<Crate>();
       for (var i = 0; i < instruction.quantity; i++) {
         final moveCrate = instruction.fromStack.pop();
-        instruction.toStack.push(moveCrate);
+        craneRack.push(moveCrate);
+      }
+      while (craneRack.isNotEmpty) {
+        instruction.toStack.push(craneRack.pop());
       }
     });
   }
